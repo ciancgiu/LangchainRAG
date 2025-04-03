@@ -22,7 +22,7 @@ while True:
     question = input("Ask your question (q to quit)")
     if question == "q":
         break
-    reviews = retriever.invoke(question)
+    content = retriever.invoke(question)
     result = chain.invoke({"content": [], "question": question})
     print(result)
 
