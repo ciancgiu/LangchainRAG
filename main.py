@@ -1,29 +1,30 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from vector import retriever
-from vector import clearDB
-
+from langchain_community.document_loaders import PyPDFLoader
+from vector import split_text
+from vector import add_to_db
 
 model = OllamaLLM(model = "llama3.2")
 
 template = """
-You are an expert of Data Structures and Algorithms in Python
+You are an expert in whatever information the user uploads.
 
-Here is a textbook of all concepts: {content}
+Provide the most reasonable response based on their question.
 
-Here is the question to ansewr: {question}
+Here is the relevant content: {content}
+
+Here is the question to ansewer: {question}
 """
 
 prompt = ChatPromptTemplate.from_template(template)
 chain = prompt | model
 
 
-while True:
-    question = input("Ask your question (q to quit)")
-    if question == "q":
-        break
+def invoke_model(question):
+   
     content = retriever.invoke(question)
-    result = chain.invoke({"content": [], "question": question})
-    print(result)
+    result = chain.invoke({"content":content, "question": question})
+    return result
 
-clearDB()
+
