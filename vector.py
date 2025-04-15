@@ -10,12 +10,15 @@ from tempfile import NamedTemporaryFile
 
 
 def extract_pdf_text(uploaded_file):
-
-    with open(uploaded_file.name, mode='wb') as w:
-        w.write(uploaded_file.getvalue())
-
-    loader = PyPDFLoader(uploaded_file.name)
+    temp_file_path = None
+    with NamedTemporaryFile(delete=False,suffix=".pdf") as tmp_file:
+        tmp_file.write(uploaded_file.read())
+        temp_file_path = tmp_file.name
+    
+    loader = PyPDFLoader(temp_file_path)
+    
     content = loader.load()
+    
     return content
 
 
@@ -32,19 +35,19 @@ vector_store = Chroma(
 def split_text(documents: list[Document]):
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        length_function = len,
+        chunk_size=500,
+        chunk_overlap=50,
+        length_function=len,
         is_separator_regex=False
 
         )
     chunks = text_splitter.split_documents(documents)
-    
     return chunks
 
 
 def add_to_db(documents: list[Document]):
-    if add_documents:
-        vector_store.add_documents(documents)
+
+    vector_store.add_documents(documents)
     
 
 
