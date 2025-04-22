@@ -4,18 +4,16 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import os
 import pandas as pd
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PDFPlumberLoader
 import shutil
 from tempfile import NamedTemporaryFile
 
+def extract_pdf_text(file_content):
 
-def extract_pdf_text(uploaded_file):
-    temp_file_path = None
-    with NamedTemporaryFile(delete=False,suffix=".pdf") as tmp_file:
-        tmp_file.write(uploaded_file.read())
-        temp_file_path = tmp_file.name
-    
-    loader = PyPDFLoader(temp_file_path)
+    with NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(file_content)
+        temp_file_path=temp_file.name
+    loader = PDFPlumberLoader(temp_file_path) 
     
     content = loader.load()
     
@@ -51,11 +49,10 @@ def add_to_db(documents: list[Document]):
     
 
 
-
-retriever = vector_store.as_retriever(
-   search_kwargs = {"k":5}
-)
-
+retriever=vector_store.as_retriever(
+    search_kwargs = {"k":5})
+    
+    
 
 
 
